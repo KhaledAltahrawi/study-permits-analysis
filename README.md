@@ -1,7 +1,47 @@
+## Study Permit Data Analysis (Canada, 2015-2025)
+
+This repository contains a data analysis project focused on understanding trends and patterns in Canadian study permits issued between January 2015 and January 2025. The analysis utilizes monthly data from the Government of Canada's Open Data portal to explore overall permit trends, identify top source countries, examine monthly distribution patterns, and calculate year-over-year percentage changes.
+
 ## Data Source
 
 The data used for this analysis was obtained from the Government of Canada's Open Data portal:
 
 [Study permits – Monthly data 2015 to 2024](https://open.canada.ca/data/en/dataset/90115b00-f9b8-49e8-afa3-b4cff8facaee)
+**(Note:** The analysis in this repository includes data up to January 2025, as available in the dataset at the time of analysis. The 2025 data currently only includes January statistics and should be interpreted as partial year data.)
 
-This dataset provides monthly statistics on the number of study permits issued by country of citizenship from January 2015 to December 2024.
+## Repository Contents
+
+* `Canada_Study_Permits_Analysis.ipynb`: The Jupyter Notebook containing the complete Python code for data loading, cleaning, transformation, analysis, and visualization.
+* `study_permits_by_country_2015_2025.xlsx`: The original Excel data file used for the analysis
+
+## Key Findings
+
+* **Overall Trend:** The total number of study permits issued in Canada generally showed an increasing trend between 2015 and 2024, with a particularly significant surge observed in [2023]. The data for January 2025 suggests a continued high volume, but this represents only a single month.
+* **Top Source Countries:** Based on the total number of study permits issued between 2015 and 2025, the top source countries for study permit applicants to Canada include [ India, China, France, Nigeria].
+* **Monthly Distribution:** Study permit issuance appears to peak during the months leading up to the typical academic year start, with higher numbers generally observed in [August, December]. There might be a noticeable dip in permits issued during [February, March, October, November].
+* **Year-over-Year Change:** The year-over-year percentage change in study permits showed significant growth in [2021 (compared to 2020)] and potential decreases or slower growth in other periods.
+
+* **2025 Partial Data:** The data for 2025 is limited to January only. Therefore, any conclusions drawn for the year 2025 based on this analysis are preliminary and do not represent the full annual trend.
+
+**(Note:** Please refer to the Jupyter Notebook for detailed analysis and visualizations supporting these findings.)
+
+## How to Run
+
+1.  Clone this repository to your local machine:
+    ```bash
+    git clone [https://github.com/KhaledAltahrawi/study-permits-analysis.git](https://github.com/KhaledAltahrawi/study-permits-analysis.git)
+    ```
+2.  Ensure you have Python 3 installed.
+3.  Install the necessary libraries if you haven't already:
+    ```bash
+    pip install pandas matplotlib openpyxl
+    ```
+4.  Open and run the Jupyter Notebook (`Canada_Study_Permits_Analysis.ipynb`) to reproduce the analysis and visualizations.
+
+## Contact
+
+Khaled Altahrawi
+[https://github.com/KhaledAltahrawi](https://github.com/KhaledAltahrawi)
+Khaled.tahrawi16@gmail.com
+
+---
