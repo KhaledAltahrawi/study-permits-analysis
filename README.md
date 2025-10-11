@@ -72,17 +72,29 @@ The data used in this project was obtained from the Government of Canada's Open 
 
 2. **Clone this repository**
    Set up a virtual environment (recommended)
-
+ 
+ ```bash
    python -m venv venv
-   source venv/bin/activate # on Windows: venv\Scripts\activate
+   source venv/bin/activate
+   # on Windows: venv\Scripts\activate
+
+   ```
+  
 
 3. **Install required packages**
+```bash
    pip install -r requirements.txt
 
-4. **Run the Jupyter Notebook**
-   jupyter notebook
+   ```
+  
 
-Then open Canada_Study_Permits_Analysis.ipynb and select Run All.
+4. **Run the Jupyter Notebook**
+ ```bash
+  jupyter notebook
+
+   ```
+   
+5. **Then open Canada_Study_Permits_Analysis.ipynb and select Run All.**
 This will automatically generate the latest charts under /images/ and the interactive report under /reports/.
 
 ## Contact
