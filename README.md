@@ -86,7 +86,7 @@ Compared to earlier versions, this iteration introduces several structural and a
 
 - **Year-over-Year Change:**  
   The YoY analysis highlights a strong rebound in 2021 following the pandemic-related decline, followed by more variable growth patterns.  
-  The 2025 value is presented strictly as a **YTD comparison (Jan–Jul)**.  
+  The 2025 value is presented strictly as a **YTD comparison (Jan–Nov)**.  
   ![YoY Change](images/ytd_yoy_change.png)
 
 - **Top 5 Countries Trends:**  
