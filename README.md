@@ -1,138 +1,87 @@
-## Study Permit Data Analysis (Canada, 2015 – November 2025)
+# Canadian Study Permits Data Analysis (2015 – 2026)
 
-This repository presents a comprehensive data analysis project focused on identifying trends and patterns in **Canadian study permits** issued between **January 2015 and November 2025**.  
-The analysis uses **monthly, country-level data** from the Government of Canada’s Open Data portal and applies a structured data-cleaning, validation, and visualization pipeline to ensure accuracy, consistency, and reproducibility.
+[![Live Report](https://img.shields.io/badge/Live_Report-Interactive_Dashboard-2563eb?style=for-the-badge&logo=google-chrome&logoColor=white)](https://KhaledAltahrawi.github.io/study-permits-analysis/)
+[![Python: 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-059669?style=for-the-badge)](LICENSE)
+[![Data Source](https://img.shields.io/badge/Data_Source-IRCC_Open_Data-0f172a?style=for-the-badge)](https://open.canada.ca/data/en/dataset/90115b00-f9b8-49e8-afa3-b4cff8facaee)
 
-The project explores:
-
-- Long-term issuance trends
-- Top source countries
-- Seasonal (monthly) distribution patterns
-- Year-over-year (YoY) percentage changes with proper year-to-date (YTD) handling
+An empirical data analysis examining trends, source countries, seasonality, and the measurable impact of federal policy caps on Canadian study permits issued between **January 2015 and August 2026**.
 
 ---
 
-## Data Source
+## 🌐 Live Interactive Report
 
-The dataset used in this project was obtained from the Government of Canada's Open Data portal:
-
-📊 [Study permits – Monthly data 2015 to 2025](https://open.canada.ca/data/en/dataset/90115b00-f9b8-49e8-afa3-b4cff8facaee)
-
-> **Important note on data coverage:**  
-> The most recent dataset includes data **through November 2025 only**.  
-> As a result, all 2025 figures in this analysis are treated explicitly as **year-to-date (YTD)** values, and comparisons are adjusted accordingly to maintain consistency.
+Explore the visual data storytelling report:  
+👉 **[https://KhaledAltahrawi.github.io/study-permits-analysis/](https://KhaledAltahrawi.github.io/study-permits-analysis/)**
 
 ---
 
-## Repository Contents
+## 📊 Key Findings & Policy Cap Impact
 
-- **`Canada_Study_Permits_Analysis.ipynb`**  
-  Main Jupyter Notebook containing the full analysis pipeline:
-  - Robust data loading and cleaning
-  - Validation and consistency checks
-  - Transformation to long-format monthly data
-  - Exploratory data analysis
-  - Generation of publication-ready visualizations
-
-- **`study_permits_by_country_2015_2025.xlsx`**  
-  Original Excel dataset used for analysis (unmodified source data)
-
-- **`images/`**  
-  Static `.png` images generated programmatically from the notebook:
-  - `yearly_permits_trend.png` – Total study permits per year (2015–November 2025) with smart labels and grand total
-  - `top_10_countries.png` – Top 10 countries of citizenship (cumulative total)
-  - `top_5_countries_trends_grouped_bars.png` – Grouped bar chart showing YTD trends for the top 5 countries
-  - `monthly_distribution.png` – Aggregate monthly distribution across all years (seasonality)
-  - `ytd_yoy_change.png` – Year-over-year % change (2016–2024 full years; 2025 YTD through November)
-
-- **`reports/`**  
-  Interactive HTML outputs:
-  - `yearly_permits_trend.html` – Interactive Plotly visualization of yearly totals
-
-- **`requirements.txt`**  
-  Python dependencies required to run the notebook
-
-- **`.gitignore`**  
-  Excludes checkpoints, virtual environments, and temporary files
+- **Decade of Growth & The 2023 Peak:** Total study permits expanded from ~352,000 in 2015 to an all-time historic high of **1,401,690 in 2023**.
+- **The Policy Cap Contraction (2024–2025):** 
+  - **2024:** Issuance fell **-19.9%** (to 1,062,375) following initial cap announcements.
+  - **2025:** Contraction deepened by **-34.8%** (to 802,015) as provincial attestation letters (PALs) took full effect.
+- **2026 Stabilization:** Through August 2026, **478,690** permits were issued, tracking at a stabilized rate (-2.4%) relative to the aligned 2025 window.
+- **Top Source Nations:** The leading countries of citizenship over the 12-year period are **India**, **China**, **Nigeria**, the **Philippines**, and **France**.
+- **Seasonal Rhythm:** Permit issuance demonstrates persistent seasonality, peaking heavily in **August and September** ahead of Fall semester university intakes.
 
 ---
 
-## Key Improvements (2026 Update)
+## 📁 Repository Structure
 
-Compared to earlier versions, this iteration introduces several structural and analytical improvements:
-
-- Explicit **data validation and cleaning steps** to ensure numeric integrity
-- Clear and consistent handling of **partial-year (YTD) data** for 2025
-- Year-over-year comparisons computed using **aligned month ranges**
-- Improved visualization clarity with annotations, labels, and contextual notes
-- Modular notebook structure designed for **future extensions**, such as regional aggregation or additional years of data
-
----
-
-## Key Findings
-
-- **Overall Trend:**  
-  Study permit issuance in Canada shows a sustained upward trend from 2015 through 2024.  
-  The partial 2025 data (January–November) indicates continued high issuance levels.  
-  ![Yearly Trend](images/yearly_permits_trend.png)
-
-- **Top Source Countries:**  
-  Between 2015 and November 2025, the leading source countries are **India**, **China**, **Nigeria**, **Philippines**, and **France**.  
-  ![Top 10 Countries](images/top_10_countries.png)
-
-- **Monthly Distribution:**  
-  Permit issuance demonstrates strong seasonality, peaking around **August–September** (academic intake periods) and **December**, with notable dips in **February**, **March**, and **October**.  
-  ![Monthly Distribution](images/monthly_distribution.png)
-
-- **Year-over-Year Change:**  
-  The YoY analysis highlights a strong rebound in 2021 following the pandemic-related decline, followed by more variable growth patterns.  
-  The 2025 value is presented strictly as a **YTD comparison (Jan–Nov)**.  
-  ![YoY Change](images/ytd_yoy_change.png)
-
-- **Top 5 Countries Trends:**  
-  The grouped bar analysis shows consistent growth among major source countries, particularly **India** and **Nigeria**, over the past decade.  
-  ![Top 5 Countries Trends](images/top_5_countries_trends_grouped_bars.png)
+```text
+├── Canada_Study_Permits_Analysis.ipynb  # Interactive Jupyter notebook
+├── pipeline.py                          # Automated data retrieval & chart generation
+├── index.html                           # Visual storytelling web report (GitHub Pages)
+├── study_permits_by_country_2015_2026.xlsx # Official IRCC dataset (latest release)
+├── images/                              # Programmatically rendered figures
+│   ├── yearly_permits_trend.png
+│   ├── top_10_countries.png
+│   ├── top_5_countries_trends_grouped_bars.png
+│   ├── monthly_distribution.png
+│   └── ytd_yoy_change.png
+├── requirements.txt                     # Python dependencies
+└── README.md
+```
 
 ---
 
-## How to Run
+## ⚡ Automated Pipeline (`pipeline.py`)
 
-1. **Clone this repository**
+This repository includes a standalone automated Python pipeline that pulls the latest official XLSX directly from the IRCC portal, handles multi-index restructuring, and regenerates all visualizations in a single run:
 
+```bash
+python pipeline.py
+```
+
+---
+
+## 💻 Local Setup & Execution
+
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/KhaledAltahrawi/study-permits-analysis.git
    cd study-permits-analysis
-
    ```
 
-2. **Set up a virtual environment (recommended)**
-
-```bash
-  python -m venv venv
-  source venv/bin/activate
-  # on Windows: venv\Scripts\activate
-
-```
-
-3. **Install required packages**
-
-```bash
+2. **Install dependencies:**
+   ```bash
    pip install -r requirements.txt
+   ```
 
-```
+3. **Run the pipeline or Jupyter Notebook:**
+   ```bash
+   # Run automated pipeline
+   python pipeline.py
 
-4. **Run the Jupyter Notebook**
+   # Or explore interactively
+   jupyter notebook Canada_Study_Permits_Analysis.ipynb
+   ```
 
-```bash
- jupyter notebook
+---
 
-```
+## 📄 License & Attribution
 
-5. **Then open Canada_Study_Permits_Analysis.ipynb and select Run All.**
-   This will automatically generate the latest charts under /images/ and the interactive report under /reports/.
-
-## Contact
-
-Khaled Altahrawi
-https://github.com/KhaledAltahrawi
-Khaled.tahrawi16@gmail.com
+- **Author**: [Khaled Altahrawi](https://github.com/KhaledAltahrawi) | [Portfolio](https://KhaledAltahrawi.github.io/portfolio/)
+- **Data Source**: Immigration, Refugees and Citizenship Canada (IRCC) Open Data Portal under the [Open Government Licence – Canada](https://open.canada.ca/en/open-government-licence-canada).
