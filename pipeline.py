@@ -5,10 +5,12 @@ Description:
     Automated data retrieval, cleaning, validation, and visualization pipeline.
     Pulls the latest open dataset from Immigration, Refugees and Citizenship Canada (IRCC),
     processes multi-index Excel hierarchies into tidy long-format records,
-    and programmatically renders high-resolution analytical visualizations.
+    and programmatically renders high-resolution analytical visualizations
+    and structured JSON for the interactive web dashboard.
 """
 
 import os
+import json
 import calendar
 import urllib.request
 import numpy as np
@@ -22,6 +24,7 @@ IRCC_DATA_URL = "https://www.ircc.canada.ca/opendata-donneesouvertes/data/EN_ODP
 EXCEL_FILE = "study_permits_by_country_2015_2026.xlsx"
 IMAGES_DIR = "images"
 REPORTS_DIR = "reports"
+DATA_DIR = "data"
 
 MONTH_MAP = {
     'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4,
@@ -31,14 +34,18 @@ MONTH_MAP = {
 
 os.makedirs(IMAGES_DIR, exist_ok=True)
 os.makedirs(REPORTS_DIR, exist_ok=True)
+os.makedirs(DATA_DIR, exist_ok=True)
 
 
 def download_latest_dataset():
-    """Fetch the latest official XLSX release from the IRCC Open Data portal."""
-    print("--> Fetching latest official dataset from IRCC Open Data Portal...")
-    urllib.request.urlretrieve(IRCC_DATA_URL, EXCEL_FILE)
-    size_kb = os.path.getsize(EXCEL_FILE) / 1024
-    print(f"--> Downloaded: {EXCEL_FILE} ({size_kb:.1f} KB)")
+    """Fetch the latest official XLSX release from the IRCC Open Data portal if not present."""
+    if not os.path.exists(EXCEL_FILE):
+        print("--> Fetching latest official dataset from IRCC Open Data Portal...")
+        urllib.request.urlretrieve(IRCC_DATA_URL, EXCEL_FILE)
+        size_kb = os.path.getsize(EXCEL_FILE) / 1024
+        print(f"--> Downloaded: {EXCEL_FILE} ({size_kb:.1f} KB)")
+    else:
+        print(f"--> Using existing dataset: {EXCEL_FILE}")
 
 
 def load_and_clean_data():
@@ -56,6 +63,9 @@ def load_and_clean_data():
     # Normalize country column name across variants
     country_col = [c for c in df.columns if 'Country of Citizenship' in c][0]
     df.rename(columns={country_col: 'Country of Citizenship'}, inplace=True)
+
+    # Exclude summary rows to prevent double-counting
+    df = df[df['Country of Citizenship'] != 'Total unique persons'].copy()
 
     # Drop aggregate summary columns
     columns_to_drop = [col for col in df.columns if 'Total' in col]
@@ -123,7 +133,6 @@ def generate_visualizations(df_long, ctx):
     yearly = df_long.groupby("Year", as_index=False)["Number of Students"].sum().sort_values("Year")
     years = yearly["Year"].tolist()
     values = yearly["Number of Students"].tolist()
-    grand_total = sum(values)
 
     plt.figure(figsize=(12, 6))
     plt.plot(years, values, marker='o', linewidth=2.8, color="#1e3a8a", markersize=8)
@@ -134,7 +143,7 @@ def generate_visualizations(df_long, ctx):
     plt.grid(True, linestyle="--", alpha=0.5)
 
     for i, (yr, val) in enumerate(zip(years, values)):
-        offset = 12000 if i % 2 == 0 else -18000
+        offset = 8000 if i % 2 == 0 else -12000
         plt.annotate(
             f"{val:,}",
             xy=(yr, val),
@@ -247,7 +256,7 @@ def generate_visualizations(df_long, ctx):
 
     for bar in bars:
         h = int(bar.get_height())
-        plt.text(bar.get_x() + bar.get_width() / 2, h + 8000, f"{h:,}", ha="center", va="bottom", fontsize=9)
+        plt.text(bar.get_x() + bar.get_width() / 2, h + 4000, f"{h:,}", ha="center", va="bottom", fontsize=9)
 
     plt.tight_layout()
     plt.savefig(os.path.join(IMAGES_DIR, "monthly_distribution.png"), dpi=300)
@@ -293,7 +302,91 @@ def generate_visualizations(df_long, ctx):
     plt.close()
 
     print("--> All 5 visualizations successfully generated.")
-    return yearly, top_10, yoy_totals
+    return yearly, top_10, yoy_totals, monthly_totals
+
+
+def export_interactive_json(df_long, ctx, yearly, top_10, yoy_totals, monthly_totals):
+    """
+    Export structured, lightweight JSON for the interactive web frontend (Chart.js & Explorer).
+    """
+    print("--> Exporting structured JSON for interactive frontend...")
+
+    # Grand total and yearly trend
+    years_list = yearly["Year"].astype(int).tolist()
+    totals_list = yearly["Number of Students"].astype(int).tolist()
+    grand_total = int(sum(totals_list))
+
+    # Top 10 countries
+    top_10_dict = {
+        "countries": top_10.index.tolist(),
+        "totals": [int(v) for v in top_10.values]
+    }
+
+    # Seasonality
+    seasonality_dict = {
+        "months": monthly_totals["MonthName"].tolist(),
+        "totals": monthly_totals["Number of Students"].astype(int).tolist()
+    }
+
+    # YoY Change
+    yoy_dict = {
+        "years": yoy_totals["Year"].astype(int).tolist()[1:],
+        "rates": [round(float(v), 1) if not np.isnan(v) else 0.0 for v in yoy_totals["YoY_%"].tolist()[1:]]
+    }
+
+    # Build per-country yearly dictionary for all 220 countries
+    country_yearly = df_long.groupby(["Country of Citizenship", "Year"])["Number of Students"].sum().unstack(fill_value=0)
+    countries_data = {}
+    for country in sorted(country_yearly.index.tolist()):
+        c_series = country_yearly.loc[country].astype(int).tolist()
+        c_total = int(sum(c_series))
+        if c_total > 0:
+            countries_data[country] = {
+                "total": c_total,
+                "values": c_series
+            }
+
+    # Calculate key policy metrics
+    peak_val = int(yearly.loc[yearly["Year"] == 2023, "Number of Students"].values[0])
+    y2024_val = int(yearly.loc[yearly["Year"] == 2024, "Number of Students"].values[0])
+    y2025_val = int(yearly.loc[yearly["Year"] == 2025, "Number of Students"].values[0])
+    y2026_val = int(yearly.loc[yearly["Year"] == 2026, "Number of Students"].values[0])
+
+    data_payload = {
+        "summary": {
+            "grand_total": grand_total,
+            "peak_year": 2023,
+            "peak_permits": peak_val,
+            "y2024_permits": y2024_val,
+            "y2024_drop_pct": round(((y2024_val - peak_val) / peak_val) * 100, 1),
+            "y2025_permits": y2025_val,
+            "y2025_drop_pct": round(((y2025_val - y2024_val) / y2024_val) * 100, 1),
+            "y2026_permits_ytd": y2026_val,
+            "latest_period": ctx["period_label"],
+            "latest_month": ctx["latest_month_name"],
+            "latest_year": ctx["latest_year"],
+            "years": years_list
+        },
+        "yearly_trend": {
+            "years": years_list,
+            "totals": totals_list
+        },
+        "top_10": top_10_dict,
+        "seasonality": seasonality_dict,
+        "yoy_change": yoy_dict,
+        "countries": countries_data
+    }
+
+    json_path = os.path.join(DATA_DIR, "study_permits_data.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(data_payload, f, ensure_ascii=False)
+
+    js_path = os.path.join(DATA_DIR, "study_permits_data.js")
+    with open(js_path, "w", encoding="utf-8") as f:
+        f.write("window.PERMITS_DATA = " + json.dumps(data_payload, ensure_ascii=False) + ";\n")
+
+    size_kb = os.path.getsize(json_path) / 1024
+    print(f"--> Exported: {json_path} and {js_path} ({size_kb:.1f} KB, {len(countries_data)} countries)")
 
 
 def run_pipeline():
@@ -305,16 +398,8 @@ def run_pipeline():
     print(f"Total Rows (tidy): {len(df_long):,}")
     print(f"Distinct Countries: {df_long['Country of Citizenship'].nunique()}")
 
-    yearly, top_10, yoy_totals = generate_visualizations(df_long, ctx)
-
-    # Print summary highlights for reports
-    print("\n=== ANALYTICAL HIGHLIGHTS ===")
-    for _, row in yearly.tail(4).iterrows():
-        print(f"Year {int(row['Year'])}: {int(row['Number of Students']):,} permits")
-
-    print("\n=== RECENT YOY SHIFTS (Aligned Window) ===")
-    for _, row in yoy_totals.tail(4).iterrows():
-        print(f"Year {int(row['Year'])}: {row['YoY_%']:+.1f}%")
+    yearly, top_10, yoy_totals, monthly_totals = generate_visualizations(df_long, ctx)
+    export_interactive_json(df_long, ctx, yearly, top_10, yoy_totals, monthly_totals)
 
     print("\nPipeline execution finished successfully!")
 

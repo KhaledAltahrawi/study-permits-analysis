@@ -3,18 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Canadian Study Permit Shift (2015 – 2026) | Data Analysis</title>
-    <meta name="description" content="An empirical data analysis investigating trends, seasonality, and the impact of federal policy caps on Canadian study permits from 2015 through 2026." />
+    <title>The Canadian Study Permit Shift (2015 – 2026) | Interactive Data Story</title>
+    <meta name="description" content="An empirical data analysis investigating trends, country trajectories, seasonality, and the measurable impact of federal policy caps on Canadian study permits from 2015 through 2026." />
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- Embedded Data Payload -->
+    <script src="data/study_permits_data.js"></script>
+
     <style>
       :root {
         --primary: #0f172a;
         --accent: #2563eb;
+        --accent-hover: #1d4ed8;
         --accent-red: #dc2626;
         --accent-green: #059669;
         --bg: #f8fafc;
@@ -35,17 +41,19 @@
         padding: 0;
       }
       .container {
-        max-width: 960px;
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 40px 24px 80px 24px;
+        padding: 30px 20px 80px 20px;
       }
       .nav-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 16px 0;
-        margin-bottom: 40px;
+        margin-bottom: 35px;
         border-bottom: 1px solid var(--border);
+        flex-wrap: wrap;
+        gap: 12px;
       }
       .nav-brand {
         font-weight: 700;
@@ -56,15 +64,22 @@
         gap: 8px;
         font-size: 1.05rem;
       }
+      .nav-brand:hover {
+        color: var(--accent);
+      }
+      .nav-links {
+        display: flex;
+        gap: 10px;
+      }
       .nav-links a {
         color: var(--accent);
         text-decoration: none;
         font-weight: 600;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 6px 14px;
+        padding: 7px 14px;
         border-radius: 6px;
         background: rgba(37, 99, 235, 0.08);
         transition: all 0.2s ease;
@@ -75,7 +90,7 @@
       }
       header {
         text-align: center;
-        margin-bottom: 50px;
+        margin-bottom: 40px;
       }
       .badge-pill {
         display: inline-flex;
@@ -87,10 +102,10 @@
         font-weight: 600;
         padding: 6px 14px;
         border-radius: 50px;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
       }
       h1 {
-        font-size: 2.6rem;
+        font-size: 2.5rem;
         font-weight: 800;
         color: var(--primary);
         letter-spacing: -0.8px;
@@ -98,27 +113,52 @@
         line-height: 1.25;
       }
       .subtitle {
-        font-size: 1.2rem;
+        font-size: 1.15rem;
         color: var(--text-muted);
-        max-width: 680px;
+        max-width: 720px;
         margin: 0 auto 24px auto;
+      }
+      .view-controls {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 35px;
+      }
+      .btn-toggle {
+        padding: 8px 18px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 30px;
+        border: 1px solid var(--border);
+        background: white;
+        color: var(--text-muted);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+      }
+      .btn-toggle.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
       }
       .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
         gap: 16px;
-        margin-bottom: 50px;
+        margin-bottom: 45px;
       }
       .stat-card {
         background: var(--card-bg);
         border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 20px;
+        padding: 22px 18px;
         text-align: center;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
       }
       .stat-card__number {
-        font-size: 1.9rem;
+        font-size: 1.95rem;
         font-weight: 800;
         color: var(--accent);
         margin-bottom: 4px;
@@ -129,22 +169,22 @@
         font-weight: 600;
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.4px;
       }
       .section-card {
         background: var(--card-bg);
         border: 1px solid var(--border);
         border-radius: 14px;
-        padding: 36px 32px;
+        padding: 34px 30px;
         margin-bottom: 40px;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
       }
       h2 {
-        font-size: 1.65rem;
+        font-size: 1.6rem;
         font-weight: 700;
         color: var(--primary);
         margin-top: 0;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -152,9 +192,15 @@
       p {
         font-size: 1.05rem;
         color: var(--text);
-        margin-bottom: 20px;
+        margin-bottom: 18px;
       }
-      img {
+      .chart-container {
+        position: relative;
+        width: 100%;
+        min-height: 360px;
+        margin: 20px 0;
+      }
+      .static-img {
         width: 100%;
         height: auto;
         border-radius: 10px;
@@ -166,7 +212,7 @@
         background: #f0fdf4;
         border: 1px solid #bbf7d0;
         border-radius: 10px;
-        padding: 18px 20px;
+        padding: 16px 20px;
         margin-top: 16px;
         font-size: 0.98rem;
         color: #166534;
@@ -180,6 +226,83 @@
         background: #eff6ff;
         border-color: #bfdbfe;
         color: #1e40af;
+      }
+      /* Country Explorer Controls */
+      .explorer-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        background: #f1f5f9;
+        padding: 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      @media (max-width: 650px) {
+        .explorer-controls {
+          grid-template-columns: 1fr;
+        }
+      }
+      .explorer-group label {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 6px;
+      }
+      .explorer-select {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background: white;
+        color: var(--primary);
+        outline: none;
+      }
+      .explorer-presets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+        align-items: center;
+      }
+      .explorer-presets span {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+      .btn-preset {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--accent);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .btn-preset:hover {
+        background: var(--accent);
+        color: white;
+      }
+      .compare-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .country-stat-box {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.92rem;
+      }
+      .country-stat-box strong {
+        display: block;
+        font-size: 1.1rem;
+        color: var(--primary);
       }
       footer {
         text-align: center;
@@ -204,37 +327,45 @@
         </a>
         <div class="nav-links">
           <a href="https://github.com/KhaledAltahrawi/study-permits-analysis" target="_blank" rel="noopener noreferrer">
-            <i class="fa-brands fa-github"></i> View GitHub Repo
+            <i class="fa-brands fa-github"></i> Source Repository
           </a>
         </div>
       </nav>
 
       <header>
         <div class="badge-pill">
-          <i class="fa-solid fa-database"></i> IRCC Official Open Data (2015 – August 2026)
+          <i class="fa-solid fa-database"></i> Official IRCC Data (2015 – August 2026)
         </div>
         <h1>The Shift in Canadian Study Permits</h1>
         <p class="subtitle">
           An empirical analysis of international student flows into Canada, from historic expansion through peak intake and the measurable impact of federal policy caps.
         </p>
+        <div class="view-controls">
+          <button class="btn-toggle active" id="btn-interactive" onclick="switchView('interactive')">
+            <i class="fa-solid fa-chart-simple"></i> Interactive Charts
+          </button>
+          <button class="btn-toggle" id="btn-static" onclick="switchView('static')">
+            <i class="fa-solid fa-image"></i> Static Figures
+          </button>
+        </div>
       </header>
 
       <!-- Key Metrics Row -->
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-card__number">1.40M</div>
+          <div class="stat-card__number" id="m-peak">700K</div>
           <div class="stat-card__label">Peak Issuance (2023)</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card__number stat-red">-19.9%</div>
+          <div class="stat-card__number stat-red" id="m-drop24">-24.2%</div>
           <div class="stat-card__label">2024 Initial Cap Drop</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card__number stat-red">-34.8%</div>
+          <div class="stat-card__number stat-red" id="m-drop25">-24.5%</div>
           <div class="stat-card__label">2025 Deep Contraction</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card__number">478K</div>
+          <div class="stat-card__number" id="m-ytd">239K</div>
           <div class="stat-card__label">2026 YTD (Through Aug)</div>
         </div>
       </div>
@@ -243,53 +374,114 @@
       <div class="section-card">
         <h2><i class="fa-solid fa-chart-line text-primary"></i> Chapter 1: The Decade of Growth & The 2023 Peak</h2>
         <p>
-          Between 2015 and 2023, Canada experienced an unprecedented surge in international student enrollment. Following the 2020 pandemic slowdown, the country rapidly reopened its doors, driving permit issuance from ~527,000 in 2020 to an all-time peak of <strong>1,401,690 in 2023</strong>.
+          Between 2015 and 2023, Canada experienced an unprecedented surge in international student enrollment. Following the 2020 pandemic dip (~271K), study permit issuance grew at a record-breaking pace, culminating in an all-time peak of <strong>700,395 permits in 2023</strong>.
         </p>
-        <img src="images/yearly_permits_trend.png" alt="Yearly Trends of Canadian Study Permits" />
+        <div class="chart-view" id="chart-yearly-wrap">
+          <div class="chart-container">
+            <canvas id="chartYearly"></canvas>
+          </div>
+        </div>
+        <img class="static-img" id="img-yearly" src="images/yearly_permits_trend.png" alt="Yearly Trends of Canadian Study Permits" style="display:none;" />
         <div class="insight-box info">
-          <strong>Key Insight:</strong> The post-pandemic rebound in 2021–2023 drove volumes higher than ever recorded in Canadian immigration history, prompting federal infrastructure and housing capacity debates that catalyzed strict regulatory changes.
+          <strong>Key Insight:</strong> The post-pandemic acceleration in 2021–2023 caused nationwide volumes to nearly triple from 2015 baseline levels, creating acute housing and community infrastructure challenges that triggered decisive federal policy intervention.
         </div>
       </div>
 
       <!-- Chapter 2 -->
       <div class="section-card">
-        <h2><i class="fa-solid fa-globe text-primary"></i> Chapter 2: Top Source Countries</h2>
+        <h2><i class="fa-solid fa-globe text-primary"></i> Chapter 2: Top 10 Source Countries</h2>
         <p>
-          A small concentration of countries constitutes the primary backbone of Canada’s international student population. Over the 2015–2026 timeframe, <strong>India</strong>, <strong>China</strong>, <strong>Nigeria</strong>, the <strong>Philippines</strong>, and <strong>France</strong> remain the top 5 source nations.
+          Over the 2015–2026 period, international student intake has been heavily concentrated in a small group of key partner nations. <strong>India</strong> and <strong>China</strong> account for the vast majority of cumulative permit holders.
         </p>
-        <img src="images/top_10_countries.png" alt="Top 10 Source Countries" />
-        <img src="images/top_5_countries_trends_grouped_bars.png" alt="Top 5 Source Countries Trend" />
+        <div class="chart-view" id="chart-top10-wrap">
+          <div class="chart-container">
+            <canvas id="chartTop10"></canvas>
+          </div>
+        </div>
+        <img class="static-img" id="img-top10" src="images/top_10_countries.png" alt="Top 10 Source Countries" style="display:none;" />
         <div class="insight-box">
-          <strong>Key Insight:</strong> India represents the largest cumulative share of students by a wide margin, but experienced the most immediate and pronounced volumetric decline following the 2024–2025 policy adjustments.
+          <strong>Key Insight:</strong> India represents over 1.5 million cumulative permits—more than the next five countries combined—making national trends acutely sensitive to changes in Indian student mobility.
         </div>
       </div>
 
-      <!-- Chapter 3 -->
-      <div class="section-card">
-        <h2><i class="fa-solid fa-calendar-days text-primary"></i> Chapter 3: The "August Rush" & Seasonality</h2>
+      <!-- Chapter 3: Interactive Country Explorer & Comparison Tool -->
+      <div class="section-card" id="explorer-section">
+        <h2><i class="fa-solid fa-code-compare text-primary"></i> Chapter 3: Interactive Country Comparison Tool</h2>
         <p>
-          Permit issuance adheres to an extremely rigid seasonal rhythm aligned with Canadian higher education academic intake calendars.
+          Explore and compare the 12-year trajectory of any country in the dataset (2015–2026). Select two countries to visualize how regional dynamics and policy shifts impacted student flows differently.
         </p>
-        <img src="images/monthly_distribution.png" alt="Monthly Seasonality of Study Permits" />
-        <div class="insight-box info">
-          <strong>Key Insight:</strong> Late summer (August and September) consistently accounts for the highest permit volume each year, corresponding to Fall semester matriculation, while February and March represent historical low periods.
+        
+        <div class="explorer-presets">
+          <span>Quick Comparisons:</span>
+          <button class="btn-preset" onclick="setComparison('India', 'China, People\'s Republic of')">India vs. China</button>
+          <button class="btn-preset" onclick="setComparison('Nigeria', 'Ghana')">Nigeria vs. Ghana</button>
+          <button class="btn-preset" onclick="setComparison('France', 'Brazil')">France vs. Brazil</button>
+          <button class="btn-preset" onclick="setComparison('Philippines', 'Vietnam')">Philippines vs. Vietnam</button>
+        </div>
+
+        <div class="explorer-controls">
+          <div class="explorer-group">
+            <label for="select-country-a"><i class="fa-solid fa-circle" style="color: #2563eb;"></i> Select Country A:</label>
+            <select id="select-country-a" class="explorer-select" onchange="updateComparison()"></select>
+          </div>
+          <div class="explorer-group">
+            <label for="select-country-b"><i class="fa-solid fa-circle" style="color: #dc2626;"></i> Select Country B:</label>
+            <select id="select-country-b" class="explorer-select" onchange="updateComparison()"></select>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="chartComparison"></canvas>
+        </div>
+
+        <div class="compare-stats">
+          <div class="country-stat-box" id="stat-country-a">
+            <span id="label-ca">Country A</span>
+            <strong id="val-ca">Total: -</strong>
+          </div>
+          <div class="country-stat-box" id="stat-country-b">
+            <span id="label-cb">Country B</span>
+            <strong id="val-cb">Total: -</strong>
+          </div>
         </div>
       </div>
 
       <!-- Chapter 4 -->
       <div class="section-card">
-        <h2><i class="fa-solid fa-scale-balanced text-primary"></i> Chapter 4: Measuring the Policy Cap Impact (2024 – 2026)</h2>
+        <h2><i class="fa-solid fa-calendar-days text-primary"></i> Chapter 4: The "August Rush" & Seasonality</h2>
         <p>
-          In early 2024, Immigration, Refugees and Citizenship Canada (IRCC) introduced an intake cap on study permit applications to stabilize growth. The data reveals the decisive impact of these policies:
+          Permit issuance strictly adheres to the Canadian academic intake calendar. Late summer (August and September) consistently accounts for the highest annual volume as universities and colleges prepare for Fall matriculation.
+        </p>
+        <div class="chart-view" id="chart-season-wrap">
+          <div class="chart-container">
+            <canvas id="chartSeason"></canvas>
+          </div>
+        </div>
+        <img class="static-img" id="img-season" src="images/monthly_distribution.png" alt="Monthly Seasonality of Study Permits" style="display:none;" />
+        <div class="insight-box info">
+          <strong>Key Insight:</strong> August alone accounts for nearly double the permit volume of average months, whereas February and March represent historical low periods for new issuances.
+        </div>
+      </div>
+
+      <!-- Chapter 5 -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-scale-balanced text-primary"></i> Chapter 5: Measuring the Policy Cap Impact (2024 – 2026)</h2>
+        <p>
+          In early 2024, Immigration, Refugees and Citizenship Canada (IRCC) introduced an intake cap and provincial attestation letters (PALs) to stabilize international student growth. The data reveals the decisive impact of these measures:
         </p>
         <ul>
-          <li><strong>2024:</strong> Permit issuance dropped <strong>-19.9%</strong> compared to the 2023 peak.</li>
-          <li><strong>2025:</strong> Contraction intensified with a <strong>-34.8%</strong> decline as provincial attestation letters (PALs) and stricter criteria took full effect.</li>
-          <li><strong>2026 (YTD through August):</strong> Issuance volumes stabilized at <strong>478,690</strong>, tracking closely (-2.4%) with the aligned 2025 window.</li>
+          <li><strong>2024:</strong> Total permits dropped <strong>-24.2%</strong> (from 700K to 530K) following the initial cap implementation.</li>
+          <li><strong>2025:</strong> Contraction continued with another <strong>-24.5%</strong> decline down to 400K as full compliance took hold.</li>
+          <li><strong>2026 (YTD through August):</strong> Issuance volumes stabilized at <strong>238,995</strong>, tracking closely (-2.4%) with the aligned 2025 comparison window.</li>
         </ul>
-        <img src="images/ytd_yoy_change.png" alt="Year-over-Year Percentage Change" />
+        <div class="chart-view" id="chart-yoy-wrap">
+          <div class="chart-container">
+            <canvas id="chartYoY"></canvas>
+          </div>
+        </div>
+        <img class="static-img" id="img-yoy" src="images/ytd_yoy_change.png" alt="Year-over-Year Percentage Change" style="display:none;" />
         <div class="insight-box warning">
-          <strong>Key Finding:</strong> The empirical data confirms that the federal cap successfully reversed the decade-long surge, cutting annual issuance by over 40% from the 2023 peak and establishing a stable new intake baseline in 2026.
+          <strong>Key Finding:</strong> The empirical data confirms that the federal policy caps successfully reversed the decade-long growth spiral, reducing new annual student permit issuances by over 42% from the 2023 peak and establishing a stable new intake baseline for 2026.
         </div>
       </div>
 
@@ -301,5 +493,326 @@
         </p>
       </footer>
     </div>
+
+    <!-- Application Script -->
+    <script>
+      let currentView = 'interactive';
+      let chartInstances = {};
+      let data = window.PERMITS_DATA || null;
+
+      function switchView(view) {
+        currentView = view;
+        document.getElementById('btn-interactive').classList.toggle('active', view === 'interactive');
+        document.getElementById('btn-static').classList.toggle('active', view === 'static');
+
+        const chartWraps = document.querySelectorAll('.chart-view, #explorer-section');
+        const staticImgs = document.querySelectorAll('.static-img');
+
+        if (view === 'static') {
+          chartWraps.forEach(el => el.style.display = 'none');
+          staticImgs.forEach(el => el.style.display = 'block');
+        } else {
+          chartWraps.forEach(el => el.style.display = 'block');
+          staticImgs.forEach(el => el.style.display = 'none');
+        }
+      }
+
+      function initApp() {
+        if (!data && window.PERMITS_DATA) {
+          data = window.PERMITS_DATA;
+        }
+
+        if (!data || typeof Chart === 'undefined') {
+          console.warn('Interactive data or Chart.js unavailable; showing static figures.');
+          switchView('static');
+          return;
+        }
+
+        initYearlyChart();
+        initTop10Chart();
+        initSeasonalityChart();
+        initYoYChart();
+        initCountryExplorer();
+      }
+
+      function initYearlyChart() {
+        const ctx = document.getElementById('chartYearly');
+        if (!ctx) return;
+        const years = data.yearly_trend.years;
+        const totals = data.yearly_trend.totals;
+
+        chartInstances.yearly = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: years,
+            datasets: [{
+              label: 'Total Permits Issued',
+              data: totals,
+              borderColor: '#2563eb',
+              backgroundColor: 'rgba(37, 99, 235, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3,
+              pointBackgroundColor: '#1e3a8a',
+              pointRadius: 5,
+              pointHoverRadius: 7
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` Permits: ${ctx.parsed.y.toLocaleString()} ${ctx.parsed.x === 2026 ? '(YTD Aug)' : ''}`
+                }
+              },
+              legend: { display: false }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (v) => (v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v)
+                },
+                grid: { color: '#f1f5f9' }
+              },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }
+
+      function initTop10Chart() {
+        const ctx = document.getElementById('chartTop10');
+        if (!ctx) return;
+        const countries = data.top_10.countries;
+        const totals = data.top_10.totals;
+
+        chartInstances.top10 = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: countries,
+            datasets: [{
+              label: 'Cumulative Permits (2015-2026)',
+              data: totals,
+              backgroundColor: '#0284c7',
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` Total: ${ctx.parsed.y.toLocaleString()} permits`
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (v) => (v >= 1000000 ? (v / 1000000).toFixed(1) + 'M' : (v / 1000).toFixed(0) + 'K')
+                },
+                grid: { color: '#f1f5f9' }
+              },
+              x: {
+                ticks: { maxRotation: 40, minRotation: 30 },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+      }
+
+      function initSeasonalityChart() {
+        const ctx = document.getElementById('chartSeason');
+        if (!ctx) return;
+
+        chartInstances.season = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.seasonality.months,
+            datasets: [{
+              label: 'Cumulative Volume',
+              data: data.seasonality.totals,
+              backgroundColor: data.seasonality.months.map(m => (m === 'Aug' || m === 'Sep') ? '#1e40af' : '#60a5fa'),
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` Permits: ${ctx.parsed.y.toLocaleString()}`
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { callback: (v) => (v / 1000).toFixed(0) + 'K' },
+                grid: { color: '#f1f5f9' }
+              },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }
+
+      function initYoYChart() {
+        const ctx = document.getElementById('chartYoY');
+        if (!ctx) return;
+
+        const rates = data.yoy_change.rates;
+        const colors = rates.map(r => r >= 0 ? '#10b981' : '#ef4444');
+
+        chartInstances.yoy = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.yoy_change.years,
+            datasets: [{
+              label: 'YoY Change (%)',
+              data: rates,
+              backgroundColor: colors,
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` Change: ${ctx.parsed.y > 0 ? '+' : ''}${ctx.parsed.y}%`
+                }
+              }
+            },
+            scales: {
+              y: {
+                ticks: { callback: (v) => v + '%' },
+                grid: { color: '#f1f5f9' }
+              },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }
+
+      function initCountryExplorer() {
+        const selectA = document.getElementById('select-country-a');
+        const selectB = document.getElementById('select-country-b');
+        if (!selectA || !selectB) return;
+
+        const countriesList = Object.keys(data.countries).sort();
+        selectA.innerHTML = '';
+        selectB.innerHTML = '';
+
+        countriesList.forEach(c => {
+          selectA.add(new Option(c, c));
+          selectB.add(new Option(c, c));
+        });
+
+        // Set default selections
+        selectA.value = 'India';
+        selectB.value = 'China, People\'s Republic of';
+
+        updateComparison();
+      }
+
+      function setComparison(ca, cb) {
+        const selectA = document.getElementById('select-country-a');
+        const selectB = document.getElementById('select-country-b');
+        if (selectA && selectB) {
+          selectA.value = ca;
+          selectB.value = cb;
+          updateComparison();
+        }
+      }
+
+      function updateComparison() {
+        const ca = document.getElementById('select-country-a').value;
+        const cb = document.getElementById('select-country-b').value;
+        const years = data.summary.years;
+
+        const dataA = data.countries[ca] ? data.countries[ca].values : years.map(() => 0);
+        const dataB = data.countries[cb] ? data.countries[cb].values : years.map(() => 0);
+
+        const totalA = data.countries[ca] ? data.countries[ca].total : 0;
+        const totalB = data.countries[cb] ? data.countries[cb].total : 0;
+
+        document.getElementById('label-ca').textContent = ca;
+        document.getElementById('val-ca').textContent = `Total: ${totalA.toLocaleString()} permits`;
+
+        document.getElementById('label-cb').textContent = cb;
+        document.getElementById('val-cb').textContent = `Total: ${totalB.toLocaleString()} permits`;
+
+        const ctx = document.getElementById('chartComparison');
+        if (!ctx) return;
+
+        if (chartInstances.comparison) {
+          chartInstances.comparison.destroy();
+        }
+
+        chartInstances.comparison = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: years,
+            datasets: [
+              {
+                label: ca,
+                data: dataA,
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37, 99, 235, 0.15)',
+                borderWidth: 2.8,
+                pointRadius: 4,
+                tension: 0.25
+              },
+              {
+                label: cb,
+                data: dataB,
+                borderColor: '#dc2626',
+                backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                borderWidth: 2.8,
+                pointRadius: 4,
+                tension: 0.25
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()} permits`
+                }
+              },
+              legend: { position: 'top' }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (v) => (v >= 1000 ? (v / 1000).toFixed(0) + 'K' : v)
+                },
+                grid: { color: '#f1f5f9' }
+              },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }
+
+      // Initialize on load
+      window.addEventListener('DOMContentLoaded', initApp);
+    </script>
   </body>
 </html>
