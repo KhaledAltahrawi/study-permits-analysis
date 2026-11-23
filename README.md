@@ -4,6 +4,7 @@
 [![Monthly Data Sync](https://img.shields.io/badge/GitHub_Actions-Auto--Sync_Active-10b981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/KhaledAltahrawi/study-permits-analysis/actions/workflows/auto-update.yml)
 [![Test Suite](https://img.shields.io/badge/pytest-8%20passed-10b981?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
 [![Data Dictionary](https://img.shields.io/badge/Data_Governance-DATA__DICTIONARY.md-0284c7?style=for-the-badge&logo=markdown&logoColor=white)](DATA_DICTIONARY.md)
+[![Docker Ready](https://img.shields.io/badge/Container-Docker%20Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](Dockerfile)
 [![Python: 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-059669?style=for-the-badge)](LICENSE)
 [![Data Source](https://img.shields.io/badge/Data_Source-IRCC_Open_Data-0f172a?style=for-the-badge)](https://open.canada.ca/data/en/dataset/90115b00-f9b8-49e8-afa3-b4cff8facaee)
@@ -63,6 +64,9 @@ Explore the visual data storytelling report featuring real-time interactive char
 ├── Canada_Study_Permits_Analysis.ipynb  # Interactive Jupyter notebook
 ├── study_permits_by_country_2015_2026.xlsx # Official IRCC dataset (latest release)
 ├── DATA_DICTIONARY.md                   # Data governance, schema definitions & validation rules
+├── Dockerfile                           # Production container definition (Python 3.11-slim)
+├── docker-compose.yml                   # 1-command container orchestration for pipeline & tests
+├── .devcontainer/                       # VS Code Dev Container configuration
 ├── requirements.txt                     # Python dependencies
 └── README.md
 ```
@@ -87,6 +91,22 @@ Run the test suite locally using `pytest`:
 ```bash
 pytest tests/ -v
 ```
+
+---
+
+## 🐳 Docker & Dev Containers (Reproducibility)
+
+Run the entire pipeline or test suite in an isolated, reproducible container without installing local Python dependencies:
+
+```bash
+# Execute end-to-end data pipeline in Docker
+docker compose run --rm pipeline
+
+# Execute test suite in Docker
+docker compose run --rm test
+```
+
+> **VS Code Dev Containers:** Open this project in VS Code and select **"Reopen in Container"** to launch a pre-configured analytics environment with Python, Jupyter, and pytest ready out of the box.
 
 ---
 

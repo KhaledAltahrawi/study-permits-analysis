@@ -1,0 +1,18 @@
+services:
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: study-permits-pipeline
+    volumes:
+      - ./data:/app/data
+      - ./images:/app/images
+      - ./study_permits_by_country_2015_2026.xlsx:/app/study_permits_by_country_2015_2026.xlsx
+    command: python pipeline.py
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: study-permits-test
+    command: pytest tests/ -v
