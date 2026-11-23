@@ -444,6 +444,12 @@
             <strong id="val-cb">Total: -</strong>
           </div>
         </div>
+
+        <div style="margin-top: 14px; text-align: right;">
+          <button class="btn-toggle" onclick="exportComparisonCSV()" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem; padding: 7px 14px; background: white;">
+            <i class="fa-solid fa-file-arrow-down text-primary"></i> Export Comparison to CSV
+          </button>
+        </div>
       </div>
 
       <!-- Chapter 4 -->
@@ -482,6 +488,34 @@
         <img class="static-img" id="img-yoy" src="images/ytd_yoy_change.png" alt="Year-over-Year Percentage Change" style="display:none;" />
         <div class="insight-box warning">
           <strong>Key Finding:</strong> The empirical data confirms that the federal policy caps successfully reversed the decade-long growth spiral, reducing new annual student permit issuances by over 42% from the 2023 peak and establishing a stable new intake baseline for 2026.
+        </div>
+      </div>
+
+      <!-- Chapter 6: Strategic Implications -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-lightbulb text-primary"></i> Chapter 6: Strategic Implications for Canadian Institutions</h2>
+        <p>
+          Beyond descriptive metrics, the contraction from 700K to ~400K annual permits demands decisive structural realignments across the Canadian international education ecosystem:
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;">
+          <div class="insight-box" style="margin: 0; background: #f8fafc; border-left: 4px solid var(--primary);">
+            <strong style="color: var(--primary); display: block; margin-bottom: 6px;"><i class="fa-solid fa-arrows-split-up-and-left"></i> Source Market Diversification:</strong>
+            <p style="font-size: 0.88rem; line-height: 1.5; color: var(--text-muted); margin: 0;">
+              Over-reliance on singular corridors (India accounted for over 40% of peak volumes) created financial vulnerability under provincial attestation caps. Institutions must pivot toward diversified recruitment across Latin America (Brazil, Colombia) and Francophone West Africa.
+            </p>
+          </div>
+          <div class="insight-box" style="margin: 0; background: #f8fafc; border-left: 4px solid #059669;">
+            <strong style="color: #059669; display: block; margin-bottom: 6px;"><i class="fa-solid fa-graduation-cap"></i> Program Alignment with Labour Shortages:</strong>
+            <p style="font-size: 0.88rem; line-height: 1.5; color: var(--text-muted); margin: 0;">
+              With Post-Graduation Work Permit (PGWP) eligibility tightening around federal priority occupations, program portfolios must align with national STEM, healthcare, and skilled trades shortages to preserve international student graduate outcomes.
+            </p>
+          </div>
+          <div class="insight-box" style="margin: 0; background: #f8fafc; border-left: 4px solid #ea580c;">
+            <strong style="color: #ea580c; display: block; margin-bottom: 6px;"><i class="fa-solid fa-building-shield"></i> Housing & Infrastructure Readiness:</strong>
+            <p style="font-size: 0.88rem; line-height: 1.5; color: var(--text-muted); margin: 0;">
+              Federal attestation allocations increasingly reflect municipal rental vacancy rates. Future student enrollment capacity is now bounded by local community housing infrastructure rather than campus lecture hall capacities.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -832,6 +866,32 @@
             }
           }
         });
+      }
+
+      function exportComparisonCSV() {
+        if (!data || !data.summary || !data.countries) return;
+        const ca = document.getElementById('select-country-a').value;
+        const cb = document.getElementById('select-country-b').value;
+        const years = data.summary.years;
+        const dataA = data.countries[ca] ? data.countries[ca].values : [];
+        const dataB = data.countries[cb] ? data.countries[cb].values : [];
+
+        let csv = `Year,"${ca}","${cb}"\r\n`;
+        for (let i = 0; i < years.length; i++) {
+          csv += `${years[i]},${dataA[i] || 0},${dataB[i] || 0}\r\n`;
+        }
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        const cleanA = ca.replace(/[^a-zA-Z0-9]/g, '_');
+        const cleanB = cb.replace(/[^a-zA-Z0-9]/g, '_');
+        link.setAttribute('download', `study_permits_${cleanA}_vs_${cleanB}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       }
 
       // Initialize on load

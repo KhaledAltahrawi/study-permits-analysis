@@ -53,16 +53,18 @@ def download_latest_dataset(force=False):
         print(f"--> Using existing dataset: {EXCEL_FILE}")
 
 
+def flatten_multiindex(col):
+    """Flatten MultiIndex column tuple into a hyphen-delimited string, stripping Unnamed markers."""
+    if isinstance(col, tuple):
+        return ' - '.join(str(x) for x in col if 'Unnamed' not in str(x))
+    return col
+
+
 def load_and_clean_data():
     """Parse multi-index Excel file and reshape into a clean, long-format DataFrame."""
     print("--> Loading and parsing Excel MultiIndex hierarchy...")
     # Skip introductory rows (2) and metadata footnotes (7)
     df = pd.read_excel(EXCEL_FILE, skiprows=2, skipfooter=7, header=[0, 1, 2])
-
-    def flatten_multiindex(col):
-        if isinstance(col, tuple):
-            return ' - '.join(str(x) for x in col if 'Unnamed' not in str(x))
-        return col
 
     df.columns = df.columns.map(flatten_multiindex)
     # Normalize country column name across variants

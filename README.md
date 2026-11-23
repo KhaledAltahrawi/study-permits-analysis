@@ -2,6 +2,8 @@
 
 [![Live Report](https://img.shields.io/badge/Live_Report-Interactive_Dashboard-2563eb?style=for-the-badge&logo=google-chrome&logoColor=white)](https://KhaledAltahrawi.github.io/study-permits-analysis/)
 [![Monthly Data Sync](https://img.shields.io/badge/GitHub_Actions-Auto--Sync_Active-10b981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/KhaledAltahrawi/study-permits-analysis/actions/workflows/auto-update.yml)
+[![Test Suite](https://img.shields.io/badge/pytest-8%20passed-10b981?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
+[![Data Dictionary](https://img.shields.io/badge/Data_Governance-DATA__DICTIONARY.md-0284c7?style=for-the-badge&logo=markdown&logoColor=white)](DATA_DICTIONARY.md)
 [![Python: 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-059669?style=for-the-badge)](LICENSE)
 [![Data Source](https://img.shields.io/badge/Data_Source-IRCC_Open_Data-0f172a?style=for-the-badge)](https://open.canada.ca/data/en/dataset/90115b00-f9b8-49e8-afa3-b4cff8facaee)
@@ -12,7 +14,7 @@ An empirical data analysis examining trends, source countries, seasonality, and 
 
 ## 🌐 Live Interactive Report
 
-Explore the visual data storytelling report with real-time interactive charts and a dual-country comparison tool:  
+Explore the visual data storytelling report featuring real-time interactive charts, dual-country comparisons, and one-click CSV export:  
 👉 **[https://KhaledAltahrawi.github.io/study-permits-analysis/](https://KhaledAltahrawi.github.io/study-permits-analysis/)**
 
 ---
@@ -29,13 +31,24 @@ Explore the visual data storytelling report with real-time interactive charts an
 
 ---
 
+## 💡 Strategic Implications for Canadian Institutions
+
+1. **Source Corridor Diversification:** Over-reliance on singular source corridors (India accounted for >40% of peak volumes) generated severe institutional volatility under PAL allocation caps. Recruitment strategy must pivot toward Latin America (Brazil, Colombia) and Francophone West Africa.
+2. **Curriculum Realignment:** As Post-Graduation Work Permit (PGWP) eligibility ties closer to national labor market priorities, academic portfolios must lean into healthcare, STEM, and skilled trades.
+3. **Housing Capacity as the New Ceiling:** Provincial attestation allocations increasingly factor municipal rental vacancy rates, shifting the institutional bottleneck from lecture hall capacity to community housing availability.
+
+---
+
 ## 📁 Repository Structure
 
 ```text
 ├── .github/workflows/
 │   └── auto-update.yml                  # Monthly automated data sync & CI/CD workflow
 ├── scripts/
-│   └── fetch_data.py                    # Dataset validation, SHA256 diff, & retrieval utility
+│   ├── fetch_data.py                    # Dataset validation, SHA256 diff, & retrieval utility
+│   └── sync_notebook.py                 # Jupyter notebook synchronization utility
+├── tests/
+│   └── test_pipeline.py                 # Automated test suite (8 unit & data assertion tests)
 ├── data/
 │   ├── study_permits_data.json          # Structured dataset for analytical consumption
 │   └── study_permits_data.js            # Zero-latency data bundle for interactive web report
@@ -49,56 +62,31 @@ Explore the visual data storytelling report with real-time interactive charts an
 ├── pipeline.py                          # End-to-end data processing & figure generation
 ├── Canada_Study_Permits_Analysis.ipynb  # Interactive Jupyter notebook
 ├── study_permits_by_country_2015_2026.xlsx # Official IRCC dataset (latest release)
+├── DATA_DICTIONARY.md                   # Data governance, schema definitions & validation rules
 ├── requirements.txt                     # Python dependencies
 └── README.md
 ```
 
 ---
 
-## 🔄 Automated CI/CD Data Sync (`auto-update.yml`)
+## 🔄 Automated CI/CD Data Sync & Testing
 
 The repository runs an automated **GitHub Actions** cron workflow:
 1. **Schedule:** Runs automatically on the **5th of every month** (aligned with IRCC open data publication cycles).
 2. **Checksum Verification:** `scripts/fetch_data.py` downloads candidate releases, validates the Excel hierarchy, and compares cryptographic SHA256 checksums.
 3. **Selective Pipeline Run:** Only if a new dataset is detected does it trigger `pipeline.py`, updating figures and structured JSON/JS.
-4. **Auto-Deploy:** Commits updates directly via `github-actions[bot]`, which immediately refreshes the live GitHub Pages dashboard.
-5. **Manual Trigger:** Developers can also trigger immediate updates via GitHub's `workflow_dispatch` button.
+4. **Automated Testing:** Runs `pytest tests/ -v` to assert data integrity, non-negativity, and schema validity before pushing.
+5. **Auto-Deploy:** Commits updates directly via `github-actions[bot]`, which immediately refreshes the live GitHub Pages dashboard.
 
 ---
 
-## ⚡ Standalone Pipeline Execution
+## 🧪 Running Automated Tests
 
-You can run the end-to-end processing pipeline locally:
-
-```bash
-python pipeline.py
-```
-
-To force a re-download from the IRCC portal:
+Run the test suite locally using `pytest`:
 
 ```bash
-python pipeline.py --force-download
+pytest tests/ -v
 ```
-
----
-
-## 💻 Local Setup
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/KhaledAltahrawi/study-permits-analysis.git
-   cd study-permits-analysis
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Explore via Jupyter Notebook:**
-   ```bash
-   jupyter notebook Canada_Study_Permits_Analysis.ipynb
-   ```
 
 ---
 

@@ -35,7 +35,7 @@ jobs:
       - name: Install Core Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas openpyxl matplotlib numpy
+          pip install pandas openpyxl matplotlib numpy pytest
 
       - name: Ingest & Validate IRCC Dataset
         id: sync
@@ -45,6 +45,10 @@ jobs:
             ARG="--force"
           fi
           python scripts/fetch_data.py $ARG
+
+      - name: Execute Automated Test Suite
+        run: |
+          pytest tests/ -v
 
       - name: Commit & Push Updates
         run: |
