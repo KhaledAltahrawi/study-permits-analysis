@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-059669?style=for-the-badge)](LICENSE)
 [![Data Source](https://img.shields.io/badge/Data_Source-IRCC_Open_Data-0f172a?style=for-the-badge)](https://open.canada.ca/data/en/dataset/90115b00-f9b8-49e8-afa3-b4cff8facaee)
 
-An empirical data analysis examining trends, source countries, seasonality, and the measurable impact of federal policy caps on Canadian study permits issued between **January 2015 and August 2026**.
+An empirical data analysis examining trends, source countries, seasonality, and the measurable impact of federal policy caps on Canadian study permits issued between **January 2015 and September 2026**.
 
 ---
 
@@ -19,13 +19,13 @@ Explore the visual data storytelling report with real-time interactive charts an
 
 ## 📊 Key Findings & Policy Cap Impact
 
-- **Decade of Growth & The 2023 Peak:** Total study permits expanded from **226,435 in 2015** to an all-time historic high of **700,395 in 2023**.
+- **Decade of Growth & The 2023 Peak:** Total study permits expanded from **226,860 in 2015** to an all-time historic high of **700,395 in 2023**.
 - **The Policy Cap Contraction (2024–2025):** 
-  - **2024:** Issuance fell **-24.2%** (down to 530,610) following initial cap announcements.
-  - **2025:** Contraction deepened by **-24.5%** (down to 400,415) as provincial attestation letters (PALs) took full effect.
-- **2026 Stabilization:** Through August 2026, **238,995** permits were issued, tracking at a stabilized rate (-2.4%) relative to the aligned 2025 window.
-- **Top Source Nations:** Leading source countries over the 12-year period are **India (1.54M)**, **China (791K)**, **Nigeria (178K)**, **France (167K)**, and **South Korea (158K)**.
-- **Seasonal Rhythm:** Permit issuance demonstrates persistent seasonality, peaking heavily in **August (~105K permits/month)** ahead of Fall semester intakes.
+  - **2024:** Issuance fell **-24.2%** (down to 530,590) following initial cap announcements.
+  - **2025:** Contraction deepened by **-24.6%** (down to 400,245) as provincial attestation letters (PALs) took full effect.
+- **2026 Stabilization:** Through September 2026, **273,805** permits were issued, tracking at a stabilized rate relative to the post-cap baseline.
+- **Top Source Nations:** Leading source countries over the 12-year period are **India (1.54M)**, **China (795K)**, **Nigeria (180K)**, **France (168K)**, and **South Korea (159K)**.
+- **Seasonal Rhythm:** Permit issuance demonstrates persistent seasonality, peaking heavily in **August (~1.09M cumulative permits)** ahead of Fall semester intakes.
 
 ---
 
