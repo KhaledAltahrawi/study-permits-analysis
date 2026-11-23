@@ -334,7 +334,7 @@
 
       <header>
         <div class="badge-pill">
-          <i class="fa-solid fa-database"></i> Official IRCC Data (2015 – August 2026)
+          <i class="fa-solid fa-database"></i> <span id="hero-badge-text">Official IRCC Data (2015 – September 2026)</span>
         </div>
         <h1>The Shift in Canadian Study Permits</h1>
         <p class="subtitle">
@@ -361,12 +361,12 @@
           <div class="stat-card__label">2024 Initial Cap Drop</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card__number stat-red" id="m-drop25">-24.5%</div>
+          <div class="stat-card__number stat-red" id="m-drop25">-24.6%</div>
           <div class="stat-card__label">2025 Deep Contraction</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card__number" id="m-ytd">239K</div>
-          <div class="stat-card__label">2026 YTD (Through Aug)</div>
+          <div class="stat-card__number" id="m-ytd">274K</div>
+          <div class="stat-card__label" id="m-ytd-label">2026 YTD (Through Sep)</div>
         </div>
       </div>
 
@@ -472,7 +472,7 @@
         <ul>
           <li><strong>2024:</strong> Total permits dropped <strong>-24.2%</strong> (from 700K to 530K) following the initial cap implementation.</li>
           <li><strong>2025:</strong> Contraction continued with another <strong>-24.5%</strong> decline down to 400K as full compliance took hold.</li>
-          <li><strong>2026 (YTD through August):</strong> Issuance volumes stabilized at <strong>238,995</strong>, tracking closely (-2.4%) with the aligned 2025 comparison window.</li>
+          <li><strong>2026 (YTD):</strong> Issuance volumes reached <strong>273,805</strong> through September, reflecting the ongoing stabilized baseline following the federal intake caps.</li>
         </ul>
         <div class="chart-view" id="chart-yoy-wrap">
           <div class="chart-container">
@@ -517,6 +517,28 @@
         }
       }
 
+      function populateHeaderStats() {
+        if (!data || !data.summary) return;
+        const s = data.summary;
+        const peakEl = document.getElementById('m-peak');
+        const drop24El = document.getElementById('m-drop24');
+        const drop25El = document.getElementById('m-drop25');
+        const ytdEl = document.getElementById('m-ytd');
+        const ytdLabel = document.getElementById('m-ytd-label');
+        const heroBadge = document.getElementById('hero-badge-text');
+
+        if (peakEl) peakEl.textContent = Math.round(s.peak_permits / 1000) + 'K';
+        if (drop24El) drop24El.textContent = (s.y2024_drop_pct > 0 ? '+' : '') + s.y2024_drop_pct + '%';
+        if (drop25El) drop25El.textContent = (s.y2025_drop_pct > 0 ? '+' : '') + s.y2025_drop_pct + '%';
+        if (ytdEl) ytdEl.textContent = Math.round(s.y2026_permits_ytd / 1000) + 'K';
+        if (ytdLabel && s.latest_month) {
+          ytdLabel.textContent = `${s.latest_year} YTD (Through ${s.latest_month.slice(0, 3)})`;
+        }
+        if (heroBadge && s.latest_period) {
+          heroBadge.textContent = `Official IRCC Data (${s.latest_period})`;
+        }
+      }
+
       function initApp() {
         if (!data && window.PERMITS_DATA) {
           data = window.PERMITS_DATA;
@@ -528,6 +550,7 @@
           return;
         }
 
+        populateHeaderStats();
         initYearlyChart();
         initTop10Chart();
         initSeasonalityChart();

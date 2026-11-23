@@ -37,11 +37,16 @@ os.makedirs(REPORTS_DIR, exist_ok=True)
 os.makedirs(DATA_DIR, exist_ok=True)
 
 
-def download_latest_dataset():
-    """Fetch the latest official XLSX release from the IRCC Open Data portal if not present."""
-    if not os.path.exists(EXCEL_FILE):
+def download_latest_dataset(force=False):
+    """Fetch the latest official XLSX release from the IRCC Open Data portal if not present or forced."""
+    if force or not os.path.exists(EXCEL_FILE):
         print("--> Fetching latest official dataset from IRCC Open Data Portal...")
-        urllib.request.urlretrieve(IRCC_DATA_URL, EXCEL_FILE)
+        req = urllib.request.Request(
+            IRCC_DATA_URL,
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+        )
+        with urllib.request.urlopen(req, timeout=90) as response, open(EXCEL_FILE, "wb") as f:
+            f.write(response.read())
         size_kb = os.path.getsize(EXCEL_FILE) / 1024
         print(f"--> Downloaded: {EXCEL_FILE} ({size_kb:.1f} KB)")
     else:
@@ -389,8 +394,8 @@ def export_interactive_json(df_long, ctx, yearly, top_10, yoy_totals, monthly_to
     print(f"--> Exported: {json_path} and {js_path} ({size_kb:.1f} KB, {len(countries_data)} countries)")
 
 
-def run_pipeline():
-    download_latest_dataset()
+def run_pipeline(force_download=False):
+    download_latest_dataset(force=force_download)
     df_long = load_and_clean_data()
     ctx = extract_context(df_long)
     print("\n=== PIPELINE CONTEXT ===")
@@ -405,4 +410,6 @@ def run_pipeline():
 
 
 if __name__ == "__main__":
-    run_pipeline()
+    import sys
+    force_dl = "--force-download" in sys.argv or "--force" in sys.argv
+    run_pipeline(force_download=force_dl)
